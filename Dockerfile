@@ -1,7 +1,7 @@
-FROM alpine:3.10
+FROM python:3-alpine
+RUN apk add --no-cache git
 
-COPY LICENSE README.md /
+COPY mergetest.py ./
+RUN pip install --no-cache-dir sh
 
-COPY entrypoint.sh /entrypoint.sh
-
-ENTRYPOINT ["/entrypoint.sh"]
+CMD ["./mergetest.py"]

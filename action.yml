@@ -1,12 +1,35 @@
-name: 'Container Action Template'
-description: 'Get started with Container actions'
-author: 'GitHub'
-inputs: 
-  myInput:
-    description: 'Input to use'
-    default: 'world'
+name: 'Merge-test Docker Action'
+description: 'Tests whether a PR merges into other branches than its destination branch, e.g. release branches.'
+author: 'Benedikt Ziemons'
+inputs:
+  work_dir:
+    description: 'The path to the git working directory'
+    required: true
+    default: '${{ github.workspace }}'
+  target_remote:
+    description: 'Repository name with owner for the target branch. For example, actions/checkout'
+    required: true
+    default: ${{ github.repository }}
+  target_branch:
+    description: 'Target branch for the test'
+    required: true
+    default: 'master'
+  source_remote_name:
+    description: 'Remote name to use to be used in the source-commits ref, if necessary'
+    required: true
+    default: ${{ github.actor }}
+  source_remote:
+    description: 'Repository name with owner for the source-commits. For example, actions/checkout'
+    required: true
+    default: ${{ github.repository }}
+  source_commits:
+    description: 'Source commits for the test'
+    required: true
+    default: 'master..${{ github.ref }}'
+  token:
+    description: 'Personal access token (PAT) used to fetch the repositories'
+    required: false
+    default: ${{ github.token }}
 runs:
   using: 'docker'
   image: 'Dockerfile'
-  args:
-    - ${{ inputs.myInput }}
