@@ -26,10 +26,6 @@ inputs:
     description: 'Source commits for the test'
     required: true
     default: 'master..${{ github.ref }}'
-  token:
-    description: 'Personal access token (PAT) used to fetch the repositories'
-    required: false
-    default: ${{ github.token }}
 runs:
   using: 'docker'
   image: 'Dockerfile'
