@@ -6,7 +6,6 @@ import sys
 
 import sh
 from sh import git
-from sh import rm
 
 
 def input_name(name: str):
@@ -46,6 +45,13 @@ def configure_git_authentication():
             fhandle.write(line.replace(auth_token("***"), auth_token(get_input("token"))))
 
 
+def add_or_set_git_remote(remote_name, remote_uri):
+    if remote_name in str(git.remote()).splitlines(keepends=False):
+        git.remote("set-url", remote_name, remote_uri)
+    else:
+        git.remote.add(remote_name, remote_uri)
+
+
 def main():
     set_token = input_exists("token")
     if set_token:
@@ -58,7 +64,7 @@ def main():
             remote = "origin"
             if get_input("source_remote_name") == remote:
                 remote = remote + "2"
-            git.remote("set-url", remote, github_remote_url)
+            add_or_set_git_remote(remote, github_remote_url)
             git.fetch(remote)
             git.checkout("-B", get_input("target_branch"), f"{remote}/{get_input('target_branch')}")
             git.reset("--hard", "HEAD")
@@ -69,7 +75,7 @@ def main():
 
         if get_input("target_remote") != get_input("source_remote"):
             source_remote_name = get_input("source_remote_name")
-            git.remote.add(source_remote_name, f"{get_github_url()}/{get_input('source_remote')}.git")
+            add_or_set_git_remote(source_remote_name, f"{get_github_url()}/{get_input('source_remote')}.git")
             git.fetch(source_remote_name)
         try:
             git("cherry-pick", get_input("source_commits"))
