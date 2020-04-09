@@ -53,12 +53,20 @@ def main():
     try:
         github_remote_url = f"{get_github_url()}/{get_input('target_remote')}.git"
         work_dir = pathlib.Path(get_input("work_dir"))
-        if work_dir.is_dir():
-            rm("-rf", str(work_dir))
+        if work_dir.is_dir() and len(list(work_dir.iterdir())) > 0:
+            os.chdir(work_dir)
+            remote = "origin"
+            if get_input("source_remote_name") == remote:
+                remote = remote + "2"
+            git.remote("set-url", remote, github_remote_url)
+            git.fetch(remote)
+            git.checkout("-B", get_input("target_branch"), f"{remote}/{get_input('target_branch')}")
+            git.reset("--hard", "HEAD")
+            git.clean("-fdx")
+        else:
+            git.clone("--branch", get_input("target_branch"), github_remote_url, str(work_dir))
+            os.chdir(work_dir)
 
-        # clone target branch
-        git.clone("--branch", get_input("target_branch"), github_remote_url, str(work_dir))
-        os.chdir(work_dir)
         if get_input("target_remote") != get_input("source_remote"):
             source_remote_name = get_input("source_remote_name")
             git.remote.add(source_remote_name, f"{get_github_url()}/{get_input('source_remote')}.git")
