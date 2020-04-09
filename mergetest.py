@@ -31,6 +31,11 @@ def add_or_set_git_remote(remote_name, remote_uri):
         git.remote.add(remote_name, remote_uri)
 
 
+def set_git_author_info(name: str, email: str):
+    git.config("user.name", name)
+    git.config("user.email", email)
+
+
 def main():
     github_remote_url = f"{get_github_url()}/{get_input('target_remote')}.git"
     work_dir = pathlib.Path(get_input("work_dir"))
@@ -52,6 +57,9 @@ def main():
         source_remote_name = get_input("source_remote_name")
         add_or_set_git_remote(source_remote_name, f"{get_github_url()}/{get_input('source_remote')}.git")
         git.fetch(source_remote_name)
+
+    set_git_author_info(f"GitHub Action {os.environ['GITHUB_ACTION']}", "action@localhost")
+
     try:
         git("cherry-pick", get_input("source_commits"))
         print("Source commits were cherry-picked successfully", file=sys.stderr)
